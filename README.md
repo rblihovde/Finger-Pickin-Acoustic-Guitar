@@ -71,13 +71,17 @@ Troubleshooting
 - If a barre voicing doesn't match the expected chord, try holding a clearer triad (root+3rd+5th)
 	or switch `Voicing Mode` to Triad and use Barre mode once detected notes are correct.
 
+**OUTPUT MIDI TO SEPERATE TRACK**
+Route the output from scripter to an external inst. track to capture the midi and edit further for more granular changes.
+
+
 License
 -------
 This repository is released under the MIT License — see `LICENSE`.
 
 Credits
 -------
-Author: Ryan Blihovde (modified for guitar)
+Author: Ryan Blihovde
 
 If you'd like more patterns, alternate tunings, or a small GUI-style parameter guide added
 to the README, tell me which items to include and I will add them.
