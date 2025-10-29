@@ -1,10 +1,10 @@
-Finger-Picking-Acoustic-Guitar
+Finger-Pickin-Acoustic-Guitar
 ================================
 
 Logic Pro (Scripter) MIDI FX script that generates realistic acoustic guitar
 fingerpicking patterns and voicings from held MIDI notes. Includes:
 
-- Multiple fingerpicking patterns (Travis, alternating bass, PIMA, folk, Jack Johnson
+- Multiple fingerpicking patterns (Travis, alternating bass, PIMA, folk, Jack Johnson ish
 	inspired patterns, plus 12-step triplet patterns for a triplet-in-4/4 feel).
 - Voicing modes: Open-String, Use Held Notes, Triad, and Barre Chords (realistic
 	E-form barre shapes).
