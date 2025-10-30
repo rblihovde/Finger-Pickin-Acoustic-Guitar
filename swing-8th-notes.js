@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------
 // This plugin delays every other 8th note to create a swing/shuffle feel.
 // The swing percentage determines how much the odd 8th notes are delayed.
-// At 0%, notes play straight. At 100%, notes play in a triplet feel.
+// At 0%, notes play straight (1:1 ratio). At 100%, notes play in triplet feel (2:1 ratio).
 
 var NeedsTimingInfo = true;
 
@@ -13,22 +13,27 @@ function HandleMIDI(event) {
 	if (event instanceof NoteOn || event instanceof NoteOff) {
 		var musicInfo = GetTimingInfo();
 		var swingAmount = GetParameter("Swing Amount") / 100.0;
-		var division = 8; // 8th notes
 		
 		// Calculate the current position in 8th notes
 		var currentBeat = event.beatPos;
-		var eighthPosition = (currentBeat * division) % 2;
+		var eighthNotePosition = Math.floor(currentBeat * 2) % 2;
 		
 		// Apply swing to odd 8th notes (off-beats)
-		var delay = 0;
-		if (eighthPosition >= 1.0 && eighthPosition < 2.0) {
-			// This is an odd 8th note - apply swing
-			// Swing shifts the note later by up to 1/3 of an 8th note (triplet feel)
-			delay = (1 / division) * swingAmount * 0.5;
+		var delayInBeats = 0;
+		if (eighthNotePosition === 1) {
+			// This is an odd 8th note (off-beat) - apply swing
+			// Maximum swing (100%) delays by 1/6 of a beat (to create 2:1 triplet ratio)
+			// At 0% swing, no delay (straight 8ths)
+			// At 100% swing, delay by 1/6 beat (first 8th is 2/3, second is 1/3)
+			delayInBeats = (1 / 6) * swingAmount;
 		}
 		
+		// Convert delay from beats to milliseconds
+		var beatsPerSecond = musicInfo.tempo / 60.0;
+		var delayInMs = (delayInBeats / beatsPerSecond) * 1000;
+		
 		// Send the event with calculated delay
-		event.sendAfterMilliseconds(delay * (60000 / musicInfo.tempo) * 4);
+		event.sendAfterMilliseconds(delayInMs);
 	} else {
 		// Pass through non-note events immediately
 		event.send();
