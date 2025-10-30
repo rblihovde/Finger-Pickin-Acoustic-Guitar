@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------
 // This plugin delays every other 8th note to create a swing/shuffle feel.
 // The swing percentage determines how much the odd 8th notes are delayed.
-// At 0%, notes play straight (1:1 ratio). At 100%, notes play in triplet feel (2:1 ratio).
+// At 0%, notes play straight (1:1 ratio). At 100%, notes play in a triplet feel (2:1 ratio).
 
 var NeedsTimingInfo = true;
 
@@ -16,11 +16,16 @@ function HandleMIDI(event) {
 		
 		// Calculate the current position in 8th notes
 		var currentBeat = event.beatPos;
-		var eighthNotePosition = Math.floor(currentBeat * 2) % 2;
+		// Find position within a beat (0.0 to 1.0)
+		var positionInBeat = currentBeat - Math.floor(currentBeat);
+		
+		// Determine if this is an odd 8th note (second half of the beat)
+		// Check if we're past the halfway point of the beat
+		var isOddEighth = positionInBeat >= 0.5;
 		
 		// Apply swing to odd 8th notes (off-beats)
 		var delayInBeats = 0;
-		if (eighthNotePosition === 1) {
+		if (isOddEighth) {
 			// This is an odd 8th note (off-beat) - apply swing
 			// Maximum swing (100%) delays by 1/6 of a beat (to create 2:1 triplet ratio)
 			// At 0% swing, no delay (straight 8ths)
