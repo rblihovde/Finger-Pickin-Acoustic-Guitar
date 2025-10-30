@@ -1,78 +1,43 @@
-Finger-Pickin-Acoustic-Guitar
-================================
+Swing 8th Notes - Logic Pro Scripter Plugin
+============================================
 
-Logic Pro (Scripter) MIDI FX script that generates realistic acoustic guitar
-fingerpicking patterns and voicings from held MIDI notes. Includes:
+A simple Logic Pro (Scripter) MIDI FX plugin that adds swing to 8th notes.
 
-- Multiple fingerpicking patterns (Travis, alternating bass, PIMA, folk, Jack Johnson ish
-	inspired patterns, plus 12-step triplet patterns for a triplet-in-4/4 feel).
-- Voicing modes: Open-String, Use Held Notes, Triad, and Barre Chords (realistic
-	E-form barre shapes).
-- Humanization: swing, timing jitter, velocity jitter, accents, omit/ghost notes.
-- Safeguards to avoid hanging notes: scheduled notes are tracked and NoteOffs are
-	sent when you release keys or stop the transport.
+This plugin delays every other 8th note to create a swing or shuffle feel.
+Perfect for adding groove to straight MIDI performances.
 
-Quick install (Logic Pro X Scripter)
-----------------------------------
-1. In Logic Pro, add a MIDI FX slot on a Software Instrument track and choose
-	 "Scripter".
-2. Open the Scripter editor, paste the contents of `Finger-Picking-Acoustic-Guitar-1-v1.js`
-	 into the script editor, or load the file if you saved it to disk.
-3. Enable the Scripter plugin and set `Guitar Mode` = On.
+Features
+--------
+- Single parameter for swing amount (0-100%)
+- 0% = straight 8th notes
+- 60% = moderate swing (recommended starting point)
+- 100% = extreme swing (approaching triplet feel)
+- Works with any incoming MIDI notes
+- Automatically handles note cleanup to prevent hanging notes
 
-How to use — recommended starting settings
------------------------------------------
-- Guitar Mode: On
-- Guitar Pattern: choose one of the patterns (Travis, Alternating Bass, Classic Arpeggio, PIMA, Folk, Jack Johnson 1/2/3, JJ Triplet 1/2/3)
-- Beat Division: default 4 for normal 8-step patterns. For the triplet (12-step) patterns
-	set `Beat Division` to 12 to get 4/4 triplet subdivisions (each beat split into three).
-- Note Length / Random Length / Random Delay: adjust to taste for more or less overlapping
-	sustain and human feel.
-- Voicing Mode:
-	- Open-String: favors open-string voicings when possible.
-	- Use Held Notes: uses the exact held notes as the chord basis.
-	- Triad: builds a triad from held notes.
-	- Barre Chords: uses realistic barre chord voicings (E-form shapes) — hold a chord and
-		set this mode to get true barre voicings placed on the fretboard.
-- Thumb Drone: toggles optional high-string (thumb) drone behavior.
-- Voicing Inversion: raise lowest notes by octave (Off / Up 1 / Up 2) to change texture.
+Quick Install (Logic Pro X Scripter)
+------------------------------------
+1. In Logic Pro, add a MIDI FX slot on a Software Instrument track and choose "Scripter"
+2. Open the Scripter editor and paste the contents of `swing-8th-notes.js` into the script editor
+3. Adjust the "Swing Amount" parameter to taste (try 60% for a classic swing feel)
 
-Triplet patterns
+How to Use
+----------
+1. Add the Scripter plugin before your instrument on any MIDI track
+2. Play or record MIDI notes as normal
+3. Adjust the "Swing Amount" slider to control how much swing is applied
+4. Start with 60% for a moderate swing feel, or try different values for more or less swing
+
+Technical Details
 -----------------
-The JJ Triplet patterns are 12-note cycles designed to be used with `Beat Division` = 12.
-Each cycle equals four beats of triplets (3 per beat). If you leave division at 4 the pattern
-will still run but it will be indexed modulo 8/16 (so set 12 for intended behavior).
+The plugin works by detecting odd 8th notes (off-beats) and delaying them by a calculated amount.
+At 60% swing, the timing approaches a triplet subdivision (2:1 ratio instead of 1:1).
+The plugin processes all incoming MIDI notes in real-time and applies the timing adjustment.
 
-Barre Chords
-------------
-When `Voicing Mode` = Barre Chords the script will:
-
-1. Detect the chord from held notes, attempting to identify major / minor / 7th variants.
-2. Choose a playable barre fret (prefers frets 1–7 where possible) and apply a standard
-	 E-form barre shape so the voicing reflects how a real guitarist would fret the chord.
-3. Ensure resulting notes are chord tones and within standard guitar range (low E = MIDI 40 and up).
-
-Accent and humanization
------------------------
-Accent patterns are designed for guitar-style phrasing (downbeat/strong beat, syncopation,
-triplet emphasis, alternating thumb/finger accents). Use `Accent Amount (%)` to scale the
-accented note's velocity. Use `Swing (%)` and `Timing Jitter (ms)` to taste.
-
-Avoiding hanging notes
-----------------------
-The script tracks scheduled NoteOns and automatically sends NoteOffs when:
-- you release all held notes on the keyboard (so held chord releases stop future scheduled notes),
-- or when the host transport stops.
-
-Troubleshooting
----------------
-- If notes hang in Logic, make sure the Scripter plugin is enabled and that `Guitar Mode` is set
-	appropriately. Releasing all held notes forces scheduled note-offs.
-- If a barre voicing doesn't match the expected chord, try holding a clearer triad (root+3rd+5th)
-	or switch `Voicing Mode` to Triad and use Barre mode once detected notes are correct.
-
-**OUTPUT MIDI TO SEPERATE TRACK**
-Route the output from scripter to an external inst. track to capture the midi and edit further for more granular changes.
+Additional Plugins in this Repository
+--------------------------------------
+This repository also includes `Finger-Picking-Acoustic-Guitar-1-v1.js`, a more complex
+fingerpicking arpeggiator with multiple patterns and voicing modes. See that file for details.
 
 
 License
