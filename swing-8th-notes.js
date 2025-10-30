@@ -9,61 +9,29 @@
 
 var NeedsTimingInfo = true;
 
-// Track scheduled notes for proper cleanup
-var scheduledNotes = [];
-var wasPlaying = false;
-
 function HandleMIDI(event) {
-	// Don't send events immediately - let ProcessMIDI handle timing
-	// Store non-note events to pass through
-	if (!(event instanceof NoteOn) && !(event instanceof NoteOff)) {
+	if (event instanceof NoteOn || event instanceof NoteOff) {
+		var musicInfo = GetTimingInfo();
+		var swingAmount = GetParameter("Swing Amount") / 100.0;
+		var division = 8; // 8th notes
+		
+		// Calculate the current position in 8th notes
+		var currentBeat = event.beatPos;
+		var eighthPosition = (currentBeat * division) % 2;
+		
+		// Apply swing to odd 8th notes (off-beats)
+		var delay = 0;
+		if (eighthPosition >= 1.0 && eighthPosition < 2.0) {
+			// This is an odd 8th note - apply swing
+			// Swing shifts the note later by up to 1/3 of an 8th note (triplet feel)
+			delay = (1 / division) * swingAmount * 0.5;
+		}
+		
+		// Send the event with calculated delay
+		event.sendAfterMilliseconds(delay * (60000 / musicInfo.tempo) * 4);
+	} else {
+		// Pass through non-note events immediately
 		event.send();
-	}
-}
-
-function ProcessMIDI() {
-	var musicInfo = GetTimingInfo();
-	
-	// Clear scheduled notes when transport stops
-	if (wasPlaying && !musicInfo.playing) {
-		for (var i = 0; i < scheduledNotes.length; i++) {
-			var off = new NoteOff(scheduledNotes[i]);
-			off.send();
-		}
-		scheduledNotes = [];
-	}
-	
-	wasPlaying = musicInfo.playing;
-	
-	// Process incoming MIDI events
-	var event;
-	while (event = MIDI.nextEvent) {
-		if (event instanceof NoteOn || event instanceof NoteOff) {
-			var swingAmount = GetParameter("Swing Amount") / 100.0;
-			var division = 8; // 8th notes
-			
-			// Calculate the current position in 8th notes
-			var currentBeat = event.beatPos;
-			var eighthPosition = (currentBeat * division) % 2;
-			
-			// Apply swing to odd 8th notes (off-beats)
-			var delay = 0;
-			if (eighthPosition >= 1.0 && eighthPosition < 2.0) {
-				// This is an odd 8th note - apply swing
-				// Swing shifts the note later by up to 1/3 of an 8th note (triplet feel)
-				delay = (1 / division) * swingAmount * 0.5;
-			}
-			
-			// Send the event with calculated delay
-			event.sendAtBeat(currentBeat + delay);
-			
-			// Track note on events for cleanup
-			if (event instanceof NoteOn) {
-				scheduledNotes.push(event);
-			}
-		} else {
-			event.send();
-		}
 	}
 }
 
